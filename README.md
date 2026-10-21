@@ -1,6 +1,6 @@
 # M321 – Verteilte Systeme
 
-Umsetzung der [Eureka-, Feign- und Gateway-Aufgaben](https://bbw-it.github.io/321_main_rupe/03_Drehbuch/Drehbuch_Modul_321_FS26_23f_PR/) für 5IA23f. Die Übungen zu Microservice-Patterns vom 21.10. sind ein separates Unterrichtsthema.
+Umsetzung der [Eureka-, Feign-, Gateway- und Pattern-Aufgaben](https://bbw-it.github.io/321_main_rupe/03_Drehbuch/Drehbuch_Modul_321_FS26_23f_PR/) für 5IA23f. Die drei implementierten Patterns und ihre Tests sind in [der PDF-Abgabe](abgabe/M321_Microservice_Patterns_21-10-2026.pdf) dokumentiert.
 
 ## Aufbau
 
@@ -31,6 +31,14 @@ Unter Windows in den Java-Projekten `mvnw.cmd` statt `./mvnw` verwenden. Vor dem
 **Datenfluss:** React ruft `GET http://localhost:8080/api/call` und `GET http://localhost:8080/api/books` auf. Die Gateway-Route `Path=/api/**` entfernt mit `StripPrefix=1` das Segment `/api` und leitet über `lb://service-02` an dessen `/call` bzw. `/books` weiter. Service-02 erreicht Service-01 für Bücher mit `@FeignClient("service-01")`. Eine zweite Gateway-Route `Path=/service-01/**` leitet nach Entfernen des Präfixes direkt an `lb://service-01` weiter, z. B. `/service-01/books`. Nur der Origin `http://localhost:5173` ist am Gateway für Browser-CORS erlaubt. Alle Dienste müssen auf demselben Rechner laufen, wenn das Frontend `localhost` verwendet.
 
 **Zusatzaufgabe:** `POST /books` auf Service-01 fügt ein Buch zur In-Memory-Liste hinzu; Service-02 reicht `POST /books` via Feign weiter. Über das Gateway: `POST http://localhost:8080/api/books` mit JSON `{"id":5,"title":"Test Book","author":"Test Author"}`. Die Daten gehen beim Neustart von Service-01 verloren. Die React-Oberfläche zeigt die Bücher an, bietet aber kein Eingabeformular; ein POST kann z. B. mit curl oder einer HTTP-Datei erfolgen.
+
+## Patterns vom 21.10.2026
+
+- **Logging / Observability:** Service-01 protokolliert Methode, Pfad, Status und Dauer jedes HTTP-Requests ohne Query-Parameter oder Body. Test: `RequestLoggingTest`.
+- **Timeout:** Der Feign-Client von Service-02 wartet bei `service-01` höchstens 250 ms auf Antwortdaten. `BooksClientTimeoutTest` simuliert eine 1-s-Antwort und prüft den Socket-Timeout sowie normale GET-/POST-Aufrufe.
+- **Rate Limiting:** Das Gateway lässt je Remote-IP 5 Requests pro 60-s-Fenster zu; danach folgt HTTP 429. CORS-OPTIONS zählen nicht. `ClientRateLimitFilterTests` prüfen Grenze, getrennte Clients und Fensterwechsel. Der Zähler ist pro Gateway-Instanz im Speicher und daher nicht clusterweit.
+
+Die [PDF-Abgabe](abgabe/M321_Microservice_Patterns_21-10-2026.pdf) enthält Problem, Implementierungs- und Testausschnitte sowie Reflexion zu jedem Pattern. Für die Abgabe im Schulportal muss die PDF separat hochgeladen werden.
 
 ## Testen
 

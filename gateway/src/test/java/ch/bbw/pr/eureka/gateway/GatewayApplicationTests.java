@@ -42,6 +42,16 @@ class GatewayApplicationTests {
     }
 
     @Test
+    void apiRequestsAreLimitedAfterFivePerClient() {
+        for (int request = 0; request < 5; request++) {
+            client.get().uri("/api/rate-limit-test").exchange()
+                    .expectStatus().value(status -> assertThat(status).isNotEqualTo(429));
+        }
+        client.get().uri("/api/rate-limit-test").exchange()
+                .expectStatus().isEqualTo(429);
+    }
+
+    @Test
     void browserPreflightAllowsFrontendOrigin() {
         client.options().uri("/api/call")
                 .header("Origin", "http://localhost:5173")
