@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react'
 
-const gateway = 'http://localhost:8080'
-
 export default function App() {
   const [result, setResult] = useState(null)
   const [books, setBooks] = useState(null)
@@ -9,7 +7,7 @@ export default function App() {
 
   useEffect(() => {
     const controller = new AbortController()
-    const get = path => fetch(`${gateway}${path}`, { signal: controller.signal }).then(response => {
+    const get = path => fetch(path, { signal: controller.signal }).then(response => {
       if (!response.ok) throw new Error(`HTTP ${response.status}`)
       return response.json()
     })

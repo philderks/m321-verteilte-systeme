@@ -15,8 +15,8 @@ test('zeigt die Antwort und Bücher über das Gateway', async () => {
   expect(await screen.findByText('Hello World from Service 01')).toBeInTheDocument()
   expect(await screen.findByText('The Metamorphosis (Franz Kafka)')).toBeInTheDocument()
   expect(screen.getByText('1984 (George Orwell)')).toBeInTheDocument()
-  expect(fetchMock).toHaveBeenCalledWith('http://localhost:8080/api/call', { signal: expect.any(AbortSignal) })
-  expect(fetchMock).toHaveBeenCalledWith('http://localhost:8080/api/books', { signal: expect.any(AbortSignal) })
+  expect(fetchMock).toHaveBeenCalledWith('/api/call', { signal: expect.any(AbortSignal) })
+  expect(fetchMock).toHaveBeenCalledWith('/api/books', { signal: expect.any(AbortSignal) })
 })
 
 test('zeigt einen Fehler, wenn das Gateway nicht erreichbar ist', async () => {
